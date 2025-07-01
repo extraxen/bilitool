@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bilirubin Tool</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Bilirubin Threshold Tool</h1>
+  <form onsubmit="event.preventDefault(); calculate();">
+    <label>Birth Date & Time: <input type="datetime-local" id="birthDateTime"></label><br>
+    <label>Sample Date & Time: <input type="datetime-local" id="sampleDateTime"></label><br>
+    <label>Gestational Age (weeks): <input type="number" id="gestAge" min="22" max="44"></label><br>
+    <label>Bilirubin (µmol/L): <input type="number" id="biliValue"></label><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="output" style="margin-top:20px;">
+    <p><strong>Age in hours:</strong> <span id="ageHours"></span></p>
+    <p><strong>Phototherapy threshold:</strong> <span id="photoThreshold"></span></p>
+    <p><strong>Recommendation:</strong> <span id="recommendation"></span></p>
+  </div>
+
+  <script>
+    function calculate() {
+      const birth = new Date(document.getElementById('birthDateTime').value);
+      const sample = new Date(document.getElementById('sampleDateTime').value);
+      const ga = parseInt(document.getElementById('gestAge').value);
+      const bili = parseFloat(document.getElementById('biliValue').value);
+
+      if (isNaN(birth) || isNaN(sample) || isNaN(ga) || isNaN(bili)) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      const ageHours = Math.round((sample - birth) / (1000 * 60 * 60));
+      document.getElementById("ageHours").innerText = ageHours + " hours";
+
+      // Dummy threshold logic
+      let threshold = 250;
+      if (ga < 38) threshold -= 30;
+      if (ageHours < 72) threshold -= 10;
+
+      document.getElementById("photoThreshold").innerText = threshold + " µmol/L";
+      document.getElementById("recommendation").innerText = bili >= threshold ? "Start phototherapy" : "No phototherapy needed";
+    }
+  </script>
+</body>
+</html>
