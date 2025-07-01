@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bilirubin Tool – Enhanced</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+
+function exportGraph() {
+  const canvas = document.getElementById("chart");
+  const link = document.createElement("a");
+  link.download = "bilirubin_graph.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+</script>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 2rem; max-width: 800px; margin: auto; }
+    h2 { background: #1f2d3d; color: white; padding: 1rem; border-radius: 6px; }
+    .section { background: white; padding: 1.5rem; margin-top: 1rem; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    label { font-weight: bold; display: block; margin-top: 1rem; }
+    input, select { padding: 0.5rem; width: 100%; margin-top: 0.25rem; border: 1px solid #ccc; border-radius: 4px; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .row > div { flex: 1; min-width: 180px; }
+    .risk-group label { font-weight: normal; display: block; margin-top: 0.5rem; }
+    button { background: #1f2d3d; color: white; border: none; padding: 0.75rem 1.5rem; margin-top: 1.5rem; font-size: 1rem; border-radius: 5px; cursor: pointer; }
+    table { margin-top: 2rem; width: 100%; border-collapse: collapse; display: none; }
+    th, td { border: 1px solid #ccc; padding: 0.6rem; text-align: center; }
+    th { background-color: #f1f1f1; }
+    #chart-container { display: none; margin-top: 2rem; }
+    canvas { background: #1e2b38; border-radius: 6px; }
+  </style>
+
+<style>
+  .recommend-yes { background-color: #ffe5e5; font-weight: bold; color: #d00; }
+  .recommend-no { background-color: #e6ffea; font-weight: bold; color: #060; }
+  .postdischarge { background: #f9f9f9; border-left: 5px solid #ccc; padding: 1rem; margin-top: 1.5rem; border-radius: 6px; display: none; }
+  #chart-container canvas { background: #0f1a2b; }
+</style>
+
+
+<style>
+  .recommend-yes { background-color: #ffe5e5; font-weight: bold; color: #b30000; }
+  .recommend-no { background-color: #e6ffe6; font-weight: bold; color: #006600; }
+  .postdischarge { background: #f9f9f9; border-left: 5px solid #ccc; padding: 1rem; margin-top: 1.5rem; border-radius: 6px; display: none; }
+</style>
+
+</head>
+<body>
+<script>
+const aapHigh = [{"x": 0, "y": 130.0}, {"x": 1, "y": 130.6}, {"x": 2, "y": 131.2}, {"x": 3, "y": 131.8}, {"x": 4, "y": 132.4}, {"x": 5, "y": 133.0}, {"x": 6, "y": 133.6}, {"x": 7, "y": 134.2}, {"x": 8, "y": 134.8}, {"x": 9, "y": 135.4}, {"x": 10, "y": 136.0}, {"x": 11, "y": 136.6}, {"x": 12, "y": 137.2}, {"x": 13, "y": 137.8}, {"x": 14, "y": 138.4}, {"x": 15, "y": 139.0}, {"x": 16, "y": 139.6}, {"x": 17, "y": 140.2}, {"x": 18, "y": 140.8}, {"x": 19, "y": 141.4}, {"x": 20, "y": 142.0}, {"x": 21, "y": 142.6}, {"x": 22, "y": 143.2}, {"x": 23, "y": 143.8}, {"x": 24, "y": 144.4}, {"x": 25, "y": 145.0}, {"x": 26, "y": 145.6}, {"x": 27, "y": 146.2}, {"x": 28, "y": 146.8}, {"x": 29, "y": 147.4}, {"x": 30, "y": 148.0}, {"x": 31, "y": 148.6}, {"x": 32, "y": 149.2}, {"x": 33, "y": 149.8}, {"x": 34, "y": 150.4}, {"x": 35, "y": 151.0}, {"x": 36, "y": 151.6}, {"x": 37, "y": 152.2}, {"x": 38, "y": 152.8}, {"x": 39, "y": 153.4}, {"x": 40, "y": 154.0}, {"x": 41, "y": 154.6}, {"x": 42, "y": 155.2}, {"x": 43, "y": 155.8}, {"x": 44, "y": 156.4}, {"x": 45, "y": 157.0}, {"x": 46, "y": 157.6}, {"x": 47, "y": 158.2}, {"x": 48, "y": 158.8}, {"x": 49, "y": 159.4}, {"x": 50, "y": 160.0}, {"x": 51, "y": 160.6}, {"x": 52, "y": 161.2}, {"x": 53, "y": 161.8}, {"x": 54, "y": 162.4}, {"x": 55, "y": 163.0}, {"x": 56, "y": 163.6}, {"x": 57, "y": 164.2}, {"x": 58, "y": 164.8}, {"x": 59, "y": 165.4}, {"x": 60, "y": 166.0}, {"x": 61, "y": 166.6}, {"x": 62, "y": 167.2}, {"x": 63, "y": 167.8}, {"x": 64, "y": 168.4}, {"x": 65, "y": 169.0}, {"x": 66, "y": 169.6}, {"x": 67, "y": 170.2}, {"x": 68, "y": 170.8}, {"x": 69, "y": 171.4}, {"x": 70, "y": 172.0}, {"x": 71, "y": 172.6}, {"x": 72, "y": 173.2}, {"x": 73, "y": 173.8}, {"x": 74, "y": 174.4}, {"x": 75, "y": 175.0}, {"x": 76, "y": 175.6}, {"x": 77, "y": 176.2}, {"x": 78, "y": 176.8}, {"x": 79, "y": 177.4}, {"x": 80, "y": 178.0}, {"x": 81, "y": 178.6}, {"x": 82, "y": 179.2}, {"x": 83, "y": 179.8}, {"x": 84, "y": 180.4}, {"x": 85, "y": 181.0}, {"x": 86, "y": 181.6}, {"x": 87, "y": 182.2}, {"x": 88, "y": 182.8}, {"x": 89, "y": 183.4}, {"x": 90, "y": 184.0}, {"x": 91, "y": 184.6}, {"x": 92, "y": 185.2}, {"x": 93, "y": 185.8}, {"x": 94, "y": 186.4}, {"x": 95, "y": 187.0}, {"x": 96, "y": 187.6}, {"x": 97, "y": 188.2}, {"x": 98, "y": 188.8}, {"x": 99, "y": 189.4}, {"x": 100, "y": 190.0}, {"x": 101, "y": 190.6}, {"x": 102, "y": 191.2}, {"x": 103, "y": 191.8}, {"x": 104, "y": 192.4}, {"x": 105, "y": 193.0}, {"x": 106, "y": 193.6}, {"x": 107, "y": 194.2}, {"x": 108, "y": 194.8}, {"x": 109, "y": 195.4}, {"x": 110, "y": 196.0}, {"x": 111, "y": 196.6}, {"x": 112, "y": 197.2}, {"x": 113, "y": 197.8}, {"x": 114, "y": 198.4}, {"x": 115, "y": 199.0}, {"x": 116, "y": 199.6}, {"x": 117, "y": 200.2}, {"x": 118, "y": 200.8}, {"x": 119, "y": 201.4}, {"x": 120, "y": 202.0}, {"x": 121, "y": 202.6}, {"x": 122, "y": 203.2}, {"x": 123, "y": 203.8}, {"x": 124, "y": 204.4}, {"x": 125, "y": 205.0}, {"x": 126, "y": 205.6}, {"x": 127, "y": 206.2}, {"x": 128, "y": 206.8}, {"x": 129, "y": 207.4}, {"x": 130, "y": 208.0}, {"x": 131, "y": 208.6}, {"x": 132, "y": 209.2}, {"x": 133, "y": 209.8}, {"x": 134, "y": 210.4}, {"x": 135, "y": 211.0}, {"x": 136, "y": 211.6}, {"x": 137, "y": 212.2}, {"x": 138, "y": 212.8}, {"x": 139, "y": 213.4}, {"x": 140, "y": 214.0}, {"x": 141, "y": 214.6}, {"x": 142, "y": 215.2}, {"x": 143, "y": 215.8}, {"x": 144, "y": 216.4}];
+const aapMedium = [{"x": 0, "y": 180.0}, {"x": 1, "y": 180.5}, {"x": 2, "y": 181.0}, {"x": 3, "y": 181.5}, {"x": 4, "y": 182.0}, {"x": 5, "y": 182.5}, {"x": 6, "y": 183.0}, {"x": 7, "y": 183.5}, {"x": 8, "y": 184.0}, {"x": 9, "y": 184.5}, {"x": 10, "y": 185.0}, {"x": 11, "y": 185.5}, {"x": 12, "y": 186.0}, {"x": 13, "y": 186.5}, {"x": 14, "y": 187.0}, {"x": 15, "y": 187.5}, {"x": 16, "y": 188.0}, {"x": 17, "y": 188.5}, {"x": 18, "y": 189.0}, {"x": 19, "y": 189.5}, {"x": 20, "y": 190.0}, {"x": 21, "y": 190.5}, {"x": 22, "y": 191.0}, {"x": 23, "y": 191.5}, {"x": 24, "y": 192.0}, {"x": 25, "y": 192.5}, {"x": 26, "y": 193.0}, {"x": 27, "y": 193.5}, {"x": 28, "y": 194.0}, {"x": 29, "y": 194.5}, {"x": 30, "y": 195.0}, {"x": 31, "y": 195.5}, {"x": 32, "y": 196.0}, {"x": 33, "y": 196.5}, {"x": 34, "y": 197.0}, {"x": 35, "y": 197.5}, {"x": 36, "y": 198.0}, {"x": 37, "y": 198.5}, {"x": 38, "y": 199.0}, {"x": 39, "y": 199.5}, {"x": 40, "y": 200.0}, {"x": 41, "y": 200.5}, {"x": 42, "y": 201.0}, {"x": 43, "y": 201.5}, {"x": 44, "y": 202.0}, {"x": 45, "y": 202.5}, {"x": 46, "y": 203.0}, {"x": 47, "y": 203.5}, {"x": 48, "y": 204.0}, {"x": 49, "y": 204.5}, {"x": 50, "y": 205.0}, {"x": 51, "y": 205.5}, {"x": 52, "y": 206.0}, {"x": 53, "y": 206.5}, {"x": 54, "y": 207.0}, {"x": 55, "y": 207.5}, {"x": 56, "y": 208.0}, {"x": 57, "y": 208.5}, {"x": 58, "y": 209.0}, {"x": 59, "y": 209.5}, {"x": 60, "y": 210.0}, {"x": 61, "y": 210.5}, {"x": 62, "y": 211.0}, {"x": 63, "y": 211.5}, {"x": 64, "y": 212.0}, {"x": 65, "y": 212.5}, {"x": 66, "y": 213.0}, {"x": 67, "y": 213.5}, {"x": 68, "y": 214.0}, {"x": 69, "y": 214.5}, {"x": 70, "y": 215.0}, {"x": 71, "y": 215.5}, {"x": 72, "y": 216.0}, {"x": 73, "y": 216.5}, {"x": 74, "y": 217.0}, {"x": 75, "y": 217.5}, {"x": 76, "y": 218.0}, {"x": 77, "y": 218.5}, {"x": 78, "y": 219.0}, {"x": 79, "y": 219.5}, {"x": 80, "y": 220.0}, {"x": 81, "y": 220.5}, {"x": 82, "y": 221.0}, {"x": 83, "y": 221.5}, {"x": 84, "y": 222.0}, {"x": 85, "y": 222.5}, {"x": 86, "y": 223.0}, {"x": 87, "y": 223.5}, {"x": 88, "y": 224.0}, {"x": 89, "y": 224.5}, {"x": 90, "y": 225.0}, {"x": 91, "y": 225.5}, {"x": 92, "y": 226.0}, {"x": 93, "y": 226.5}, {"x": 94, "y": 227.0}, {"x": 95, "y": 227.5}, {"x": 96, "y": 228.0}, {"x": 97, "y": 228.5}, {"x": 98, "y": 229.0}, {"x": 99, "y": 229.5}, {"x": 100, "y": 230.0}, {"x": 101, "y": 230.5}, {"x": 102, "y": 231.0}, {"x": 103, "y": 231.5}, {"x": 104, "y": 232.0}, {"x": 105, "y": 232.5}, {"x": 106, "y": 233.0}, {"x": 107, "y": 233.5}, {"x": 108, "y": 234.0}, {"x": 109, "y": 234.5}, {"x": 110, "y": 235.0}, {"x": 111, "y": 235.5}, {"x": 112, "y": 236.0}, {"x": 113, "y": 236.5}, {"x": 114, "y": 237.0}, {"x": 115, "y": 237.5}, {"x": 116, "y": 238.0}, {"x": 117, "y": 238.5}, {"x": 118, "y": 239.0}, {"x": 119, "y": 239.5}, {"x": 120, "y": 240.0}, {"x": 121, "y": 240.5}, {"x": 122, "y": 241.0}, {"x": 123, "y": 241.5}, {"x": 124, "y": 242.0}, {"x": 125, "y": 242.5}, {"x": 126, "y": 243.0}, {"x": 127, "y": 243.5}, {"x": 128, "y": 244.0}, {"x": 129, "y": 244.5}, {"x": 130, "y": 245.0}, {"x": 131, "y": 245.5}, {"x": 132, "y": 246.0}, {"x": 133, "y": 246.5}, {"x": 134, "y": 247.0}, {"x": 135, "y": 247.5}, {"x": 136, "y": 248.0}, {"x": 137, "y": 248.5}, {"x": 138, "y": 249.0}, {"x": 139, "y": 249.5}, {"x": 140, "y": 250.0}, {"x": 141, "y": 250.5}, {"x": 142, "y": 251.0}, {"x": 143, "y": 251.5}, {"x": 144, "y": 252.0}];
+const aapLow = [{"x": 0, "y": 220.0}, {"x": 1, "y": 220.4}, {"x": 2, "y": 220.8}, {"x": 3, "y": 221.2}, {"x": 4, "y": 221.6}, {"x": 5, "y": 222.0}, {"x": 6, "y": 222.4}, {"x": 7, "y": 222.8}, {"x": 8, "y": 223.2}, {"x": 9, "y": 223.6}, {"x": 10, "y": 224.0}, {"x": 11, "y": 224.4}, {"x": 12, "y": 224.8}, {"x": 13, "y": 225.2}, {"x": 14, "y": 225.6}, {"x": 15, "y": 226.0}, {"x": 16, "y": 226.4}, {"x": 17, "y": 226.8}, {"x": 18, "y": 227.2}, {"x": 19, "y": 227.6}, {"x": 20, "y": 228.0}, {"x": 21, "y": 228.4}, {"x": 22, "y": 228.8}, {"x": 23, "y": 229.2}, {"x": 24, "y": 229.6}, {"x": 25, "y": 230.0}, {"x": 26, "y": 230.4}, {"x": 27, "y": 230.8}, {"x": 28, "y": 231.2}, {"x": 29, "y": 231.6}, {"x": 30, "y": 232.0}, {"x": 31, "y": 232.4}, {"x": 32, "y": 232.8}, {"x": 33, "y": 233.2}, {"x": 34, "y": 233.6}, {"x": 35, "y": 234.0}, {"x": 36, "y": 234.4}, {"x": 37, "y": 234.8}, {"x": 38, "y": 235.2}, {"x": 39, "y": 235.6}, {"x": 40, "y": 236.0}, {"x": 41, "y": 236.4}, {"x": 42, "y": 236.8}, {"x": 43, "y": 237.2}, {"x": 44, "y": 237.6}, {"x": 45, "y": 238.0}, {"x": 46, "y": 238.4}, {"x": 47, "y": 238.8}, {"x": 48, "y": 239.2}, {"x": 49, "y": 239.6}, {"x": 50, "y": 240.0}, {"x": 51, "y": 240.4}, {"x": 52, "y": 240.8}, {"x": 53, "y": 241.2}, {"x": 54, "y": 241.6}, {"x": 55, "y": 242.0}, {"x": 56, "y": 242.4}, {"x": 57, "y": 242.8}, {"x": 58, "y": 243.2}, {"x": 59, "y": 243.6}, {"x": 60, "y": 244.0}, {"x": 61, "y": 244.4}, {"x": 62, "y": 244.8}, {"x": 63, "y": 245.2}, {"x": 64, "y": 245.6}, {"x": 65, "y": 246.0}, {"x": 66, "y": 246.4}, {"x": 67, "y": 246.8}, {"x": 68, "y": 247.2}, {"x": 69, "y": 247.6}, {"x": 70, "y": 248.0}, {"x": 71, "y": 248.4}, {"x": 72, "y": 248.8}, {"x": 73, "y": 249.2}, {"x": 74, "y": 249.6}, {"x": 75, "y": 250.0}, {"x": 76, "y": 250.4}, {"x": 77, "y": 250.8}, {"x": 78, "y": 251.2}, {"x": 79, "y": 251.6}, {"x": 80, "y": 252.0}, {"x": 81, "y": 252.4}, {"x": 82, "y": 252.8}, {"x": 83, "y": 253.2}, {"x": 84, "y": 253.6}, {"x": 85, "y": 254.0}, {"x": 86, "y": 254.4}, {"x": 87, "y": 254.8}, {"x": 88, "y": 255.2}, {"x": 89, "y": 255.6}, {"x": 90, "y": 256.0}, {"x": 91, "y": 256.4}, {"x": 92, "y": 256.8}, {"x": 93, "y": 257.2}, {"x": 94, "y": 257.6}, {"x": 95, "y": 258.0}, {"x": 96, "y": 258.4}, {"x": 97, "y": 258.8}, {"x": 98, "y": 259.2}, {"x": 99, "y": 259.6}, {"x": 100, "y": 260.0}, {"x": 101, "y": 260.4}, {"x": 102, "y": 260.8}, {"x": 103, "y": 261.2}, {"x": 104, "y": 261.6}, {"x": 105, "y": 262.0}, {"x": 106, "y": 262.4}, {"x": 107, "y": 262.8}, {"x": 108, "y": 263.2}, {"x": 109, "y": 263.6}, {"x": 110, "y": 264.0}, {"x": 111, "y": 264.4}, {"x": 112, "y": 264.8}, {"x": 113, "y": 265.2}, {"x": 114, "y": 265.6}, {"x": 115, "y": 266.0}, {"x": 116, "y": 266.4}, {"x": 117, "y": 266.8}, {"x": 118, "y": 267.2}, {"x": 119, "y": 267.6}, {"x": 120, "y": 268.0}, {"x": 121, "y": 268.4}, {"x": 122, "y": 268.8}, {"x": 123, "y": 269.2}, {"x": 124, "y": 269.6}, {"x": 125, "y": 270.0}, {"x": 126, "y": 270.4}, {"x": 127, "y": 270.8}, {"x": 128, "y": 271.2}, {"x": 129, "y": 271.6}, {"x": 130, "y": 272.0}, {"x": 131, "y": 272.4}, {"x": 132, "y": 272.8}, {"x": 133, "y": 273.2}, {"x": 134, "y": 273.6}, {"x": 135, "y": 274.0}, {"x": 136, "y": 274.4}, {"x": 137, "y": 274.8}, {"x": 138, "y": 275.2}, {"x": 139, "y": 275.6}, {"x": 140, "y": 276.0}, {"x": 141, "y": 276.4}, {"x": 142, "y": 276.8}, {"x": 143, "y": 277.2}, {"x": 144, "y": 277.6}];
+const bhutani40 = [{"x": 0, "y": 80.0}, {"x": 1, "y": 80.5}, {"x": 2, "y": 81.0}, {"x": 3, "y": 81.5}, {"x": 4, "y": 82.0}, {"x": 5, "y": 82.5}, {"x": 6, "y": 83.0}, {"x": 7, "y": 83.5}, {"x": 8, "y": 84.0}, {"x": 9, "y": 84.5}, {"x": 10, "y": 85.0}, {"x": 11, "y": 85.5}, {"x": 12, "y": 86.0}, {"x": 13, "y": 86.5}, {"x": 14, "y": 87.0}, {"x": 15, "y": 87.5}, {"x": 16, "y": 88.0}, {"x": 17, "y": 88.5}, {"x": 18, "y": 89.0}, {"x": 19, "y": 89.5}, {"x": 20, "y": 90.0}, {"x": 21, "y": 90.5}, {"x": 22, "y": 91.0}, {"x": 23, "y": 91.5}, {"x": 24, "y": 92.0}, {"x": 25, "y": 92.5}, {"x": 26, "y": 93.0}, {"x": 27, "y": 93.5}, {"x": 28, "y": 94.0}, {"x": 29, "y": 94.5}, {"x": 30, "y": 95.0}, {"x": 31, "y": 95.5}, {"x": 32, "y": 96.0}, {"x": 33, "y": 96.5}, {"x": 34, "y": 97.0}, {"x": 35, "y": 97.5}, {"x": 36, "y": 98.0}, {"x": 37, "y": 98.5}, {"x": 38, "y": 99.0}, {"x": 39, "y": 99.5}, {"x": 40, "y": 100.0}, {"x": 41, "y": 100.5}, {"x": 42, "y": 101.0}, {"x": 43, "y": 101.5}, {"x": 44, "y": 102.0}, {"x": 45, "y": 102.5}, {"x": 46, "y": 103.0}, {"x": 47, "y": 103.5}, {"x": 48, "y": 104.0}, {"x": 49, "y": 104.5}, {"x": 50, "y": 105.0}, {"x": 51, "y": 105.5}, {"x": 52, "y": 106.0}, {"x": 53, "y": 106.5}, {"x": 54, "y": 107.0}, {"x": 55, "y": 107.5}, {"x": 56, "y": 108.0}, {"x": 57, "y": 108.5}, {"x": 58, "y": 109.0}, {"x": 59, "y": 109.5}, {"x": 60, "y": 110.0}, {"x": 61, "y": 110.5}, {"x": 62, "y": 111.0}, {"x": 63, "y": 111.5}, {"x": 64, "y": 112.0}, {"x": 65, "y": 112.5}, {"x": 66, "y": 113.0}, {"x": 67, "y": 113.5}, {"x": 68, "y": 114.0}, {"x": 69, "y": 114.5}, {"x": 70, "y": 115.0}, {"x": 71, "y": 115.5}, {"x": 72, "y": 116.0}, {"x": 73, "y": 116.5}, {"x": 74, "y": 117.0}, {"x": 75, "y": 117.5}, {"x": 76, "y": 118.0}, {"x": 77, "y": 118.5}, {"x": 78, "y": 119.0}, {"x": 79, "y": 119.5}, {"x": 80, "y": 120.0}, {"x": 81, "y": 120.5}, {"x": 82, "y": 121.0}, {"x": 83, "y": 121.5}, {"x": 84, "y": 122.0}, {"x": 85, "y": 122.5}, {"x": 86, "y": 123.0}, {"x": 87, "y": 123.5}, {"x": 88, "y": 124.0}, {"x": 89, "y": 124.5}, {"x": 90, "y": 125.0}, {"x": 91, "y": 125.5}, {"x": 92, "y": 126.0}, {"x": 93, "y": 126.5}, {"x": 94, "y": 127.0}, {"x": 95, "y": 127.5}, {"x": 96, "y": 128.0}];
+const bhutani75 = [{"x": 0, "y": 120.0}, {"x": 1, "y": 120.6}, {"x": 2, "y": 121.2}, {"x": 3, "y": 121.8}, {"x": 4, "y": 122.4}, {"x": 5, "y": 123.0}, {"x": 6, "y": 123.6}, {"x": 7, "y": 124.2}, {"x": 8, "y": 124.8}, {"x": 9, "y": 125.4}, {"x": 10, "y": 126.0}, {"x": 11, "y": 126.6}, {"x": 12, "y": 127.2}, {"x": 13, "y": 127.8}, {"x": 14, "y": 128.4}, {"x": 15, "y": 129.0}, {"x": 16, "y": 129.6}, {"x": 17, "y": 130.2}, {"x": 18, "y": 130.8}, {"x": 19, "y": 131.4}, {"x": 20, "y": 132.0}, {"x": 21, "y": 132.6}, {"x": 22, "y": 133.2}, {"x": 23, "y": 133.8}, {"x": 24, "y": 134.4}, {"x": 25, "y": 135.0}, {"x": 26, "y": 135.6}, {"x": 27, "y": 136.2}, {"x": 28, "y": 136.8}, {"x": 29, "y": 137.4}, {"x": 30, "y": 138.0}, {"x": 31, "y": 138.6}, {"x": 32, "y": 139.2}, {"x": 33, "y": 139.8}, {"x": 34, "y": 140.4}, {"x": 35, "y": 141.0}, {"x": 36, "y": 141.6}, {"x": 37, "y": 142.2}, {"x": 38, "y": 142.8}, {"x": 39, "y": 143.4}, {"x": 40, "y": 144.0}, {"x": 41, "y": 144.6}, {"x": 42, "y": 145.2}, {"x": 43, "y": 145.8}, {"x": 44, "y": 146.4}, {"x": 45, "y": 147.0}, {"x": 46, "y": 147.6}, {"x": 47, "y": 148.2}, {"x": 48, "y": 148.8}, {"x": 49, "y": 149.4}, {"x": 50, "y": 150.0}, {"x": 51, "y": 150.6}, {"x": 52, "y": 151.2}, {"x": 53, "y": 151.8}, {"x": 54, "y": 152.4}, {"x": 55, "y": 153.0}, {"x": 56, "y": 153.6}, {"x": 57, "y": 154.2}, {"x": 58, "y": 154.8}, {"x": 59, "y": 155.4}, {"x": 60, "y": 156.0}, {"x": 61, "y": 156.6}, {"x": 62, "y": 157.2}, {"x": 63, "y": 157.8}, {"x": 64, "y": 158.4}, {"x": 65, "y": 159.0}, {"x": 66, "y": 159.6}, {"x": 67, "y": 160.2}, {"x": 68, "y": 160.8}, {"x": 69, "y": 161.4}, {"x": 70, "y": 162.0}, {"x": 71, "y": 162.6}, {"x": 72, "y": 163.2}, {"x": 73, "y": 163.8}, {"x": 74, "y": 164.4}, {"x": 75, "y": 165.0}, {"x": 76, "y": 165.6}, {"x": 77, "y": 166.2}, {"x": 78, "y": 166.8}, {"x": 79, "y": 167.4}, {"x": 80, "y": 168.0}, {"x": 81, "y": 168.6}, {"x": 82, "y": 169.2}, {"x": 83, "y": 169.8}, {"x": 84, "y": 170.4}, {"x": 85, "y": 171.0}, {"x": 86, "y": 171.6}, {"x": 87, "y": 172.2}, {"x": 88, "y": 172.8}, {"x": 89, "y": 173.4}, {"x": 90, "y": 174.0}, {"x": 91, "y": 174.6}, {"x": 92, "y": 175.2}, {"x": 93, "y": 175.8}, {"x": 94, "y": 176.4}, {"x": 95, "y": 177.0}, {"x": 96, "y": 177.6}];
+const bhutani95 = [{"x": 0, "y": 160.0}, {"x": 1, "y": 160.6}, {"x": 2, "y": 161.3}, {"x": 3, "y": 162.0}, {"x": 4, "y": 162.6}, {"x": 5, "y": 163.2}, {"x": 6, "y": 163.9}, {"x": 7, "y": 164.6}, {"x": 8, "y": 165.2}, {"x": 9, "y": 165.8}, {"x": 10, "y": 166.5}, {"x": 11, "y": 167.2}, {"x": 12, "y": 167.8}, {"x": 13, "y": 168.4}, {"x": 14, "y": 169.1}, {"x": 15, "y": 169.8}, {"x": 16, "y": 170.4}, {"x": 17, "y": 171.0}, {"x": 18, "y": 171.7}, {"x": 19, "y": 172.4}, {"x": 20, "y": 173.0}, {"x": 21, "y": 173.6}, {"x": 22, "y": 174.3}, {"x": 23, "y": 175.0}, {"x": 24, "y": 175.6}, {"x": 25, "y": 176.2}, {"x": 26, "y": 176.9}, {"x": 27, "y": 177.6}, {"x": 28, "y": 178.2}, {"x": 29, "y": 178.8}, {"x": 30, "y": 179.5}, {"x": 31, "y": 180.2}, {"x": 32, "y": 180.8}, {"x": 33, "y": 181.4}, {"x": 34, "y": 182.1}, {"x": 35, "y": 182.8}, {"x": 36, "y": 183.4}, {"x": 37, "y": 184.0}, {"x": 38, "y": 184.7}, {"x": 39, "y": 185.4}, {"x": 40, "y": 186.0}, {"x": 41, "y": 186.6}, {"x": 42, "y": 187.3}, {"x": 43, "y": 188.0}, {"x": 44, "y": 188.6}, {"x": 45, "y": 189.2}, {"x": 46, "y": 189.9}, {"x": 47, "y": 190.6}, {"x": 48, "y": 191.2}, {"x": 49, "y": 191.8}, {"x": 50, "y": 192.5}, {"x": 51, "y": 193.2}, {"x": 52, "y": 193.8}, {"x": 53, "y": 194.4}, {"x": 54, "y": 195.1}, {"x": 55, "y": 195.8}, {"x": 56, "y": 196.4}, {"x": 57, "y": 197.0}, {"x": 58, "y": 197.7}, {"x": 59, "y": 198.4}, {"x": 60, "y": 199.0}, {"x": 61, "y": 199.6}, {"x": 62, "y": 200.3}, {"x": 63, "y": 201.0}, {"x": 64, "y": 201.6}, {"x": 65, "y": 202.2}, {"x": 66, "y": 202.9}, {"x": 67, "y": 203.6}, {"x": 68, "y": 204.2}, {"x": 69, "y": 204.8}, {"x": 70, "y": 205.5}, {"x": 71, "y": 206.2}, {"x": 72, "y": 206.8}, {"x": 73, "y": 207.4}, {"x": 74, "y": 208.1}, {"x": 75, "y": 208.8}, {"x": 76, "y": 209.4}, {"x": 77, "y": 210.0}, {"x": 78, "y": 210.7}, {"x": 79, "y": 211.4}, {"x": 80, "y": 212.0}, {"x": 81, "y": 212.6}, {"x": 82, "y": 213.3}, {"x": 83, "y": 214.0}, {"x": 84, "y": 214.6}, {"x": 85, "y": 215.2}, {"x": 86, "y": 215.9}, {"x": 87, "y": 216.6}, {"x": 88, "y": 217.2}, {"x": 89, "y": 217.8}, {"x": 90, "y": 218.5}, {"x": 91, "y": 219.2}, {"x": 92, "y": 219.8}, {"x": 93, "y": 220.4}, {"x": 94, "y": 221.1}, {"x": 95, "y": 221.8}, {"x": 96, "y": 222.4}];
+const bhutani99 = [{"x": 0, "y": 190.0}, {"x": 1, "y": 190.7}, {"x": 2, "y": 191.4}, {"x": 3, "y": 192.1}, {"x": 4, "y": 192.8}, {"x": 5, "y": 193.5}, {"x": 6, "y": 194.2}, {"x": 7, "y": 194.9}, {"x": 8, "y": 195.6}, {"x": 9, "y": 196.3}, {"x": 10, "y": 197.0}, {"x": 11, "y": 197.7}, {"x": 12, "y": 198.4}, {"x": 13, "y": 199.1}, {"x": 14, "y": 199.8}, {"x": 15, "y": 200.5}, {"x": 16, "y": 201.2}, {"x": 17, "y": 201.9}, {"x": 18, "y": 202.6}, {"x": 19, "y": 203.3}, {"x": 20, "y": 204.0}, {"x": 21, "y": 204.7}, {"x": 22, "y": 205.4}, {"x": 23, "y": 206.1}, {"x": 24, "y": 206.8}, {"x": 25, "y": 207.5}, {"x": 26, "y": 208.2}, {"x": 27, "y": 208.9}, {"x": 28, "y": 209.6}, {"x": 29, "y": 210.3}, {"x": 30, "y": 211.0}, {"x": 31, "y": 211.7}, {"x": 32, "y": 212.4}, {"x": 33, "y": 213.1}, {"x": 34, "y": 213.8}, {"x": 35, "y": 214.5}, {"x": 36, "y": 215.2}, {"x": 37, "y": 215.9}, {"x": 38, "y": 216.6}, {"x": 39, "y": 217.3}, {"x": 40, "y": 218.0}, {"x": 41, "y": 218.7}, {"x": 42, "y": 219.4}, {"x": 43, "y": 220.1}, {"x": 44, "y": 220.8}, {"x": 45, "y": 221.5}, {"x": 46, "y": 222.2}, {"x": 47, "y": 222.9}, {"x": 48, "y": 223.6}, {"x": 49, "y": 224.3}, {"x": 50, "y": 225.0}, {"x": 51, "y": 225.7}, {"x": 52, "y": 226.4}, {"x": 53, "y": 227.1}, {"x": 54, "y": 227.8}, {"x": 55, "y": 228.5}, {"x": 56, "y": 229.2}, {"x": 57, "y": 229.9}, {"x": 58, "y": 230.6}, {"x": 59, "y": 231.3}, {"x": 60, "y": 232.0}, {"x": 61, "y": 232.7}, {"x": 62, "y": 233.4}, {"x": 63, "y": 234.1}, {"x": 64, "y": 234.8}, {"x": 65, "y": 235.5}, {"x": 66, "y": 236.2}, {"x": 67, "y": 236.9}, {"x": 68, "y": 237.6}, {"x": 69, "y": 238.3}, {"x": 70, "y": 239.0}, {"x": 71, "y": 239.7}, {"x": 72, "y": 240.4}, {"x": 73, "y": 241.1}, {"x": 74, "y": 241.8}, {"x": 75, "y": 242.5}, {"x": 76, "y": 243.2}, {"x": 77, "y": 243.9}, {"x": 78, "y": 244.6}, {"x": 79, "y": 245.3}, {"x": 80, "y": 246.0}, {"x": 81, "y": 246.7}, {"x": 82, "y": 247.4}, {"x": 83, "y": 248.1}, {"x": 84, "y": 248.8}, {"x": 85, "y": 249.5}, {"x": 86, "y": 250.2}, {"x": 87, "y": 250.9}, {"x": 88, "y": 251.6}, {"x": 89, "y": 252.3}, {"x": 90, "y": 253.0}, {"x": 91, "y": 253.7}, {"x": 92, "y": 254.4}, {"x": 93, "y": 255.1}, {"x": 94, "y": 255.8}, {"x": 95, "y": 256.5}, {"x": 96, "y": 257.2}];
+</script>
+
+
+<h2>Neonatal Bilirubin Tool</h2>
+
+<div class="section">
+  <div class="row">
+    <div><label>Birth Date</label><input type="date" id="birthDate"></div>
+    <div><label>Birth Time</label><select id="birthTime"><option value="00:00">12:00 AM</option>
+<option value="01:00">1:00 AM</option>
+<option value="02:00">2:00 AM</option>
+<option value="03:00">3:00 AM</option>
+<option value="04:00">4:00 AM</option>
+<option value="05:00">5:00 AM</option>
+<option value="06:00">6:00 AM</option>
+<option value="07:00">7:00 AM</option>
+<option value="08:00">8:00 AM</option>
+<option value="09:00">9:00 AM</option>
+<option value="10:00">10:00 AM</option>
+<option value="11:00">11:00 AM</option>
+<option value="12:00">12:00 PM</option>
+<option value="13:00">1:00 PM</option>
+<option value="14:00">2:00 PM</option>
+<option value="15:00">3:00 PM</option>
+<option value="16:00">4:00 PM</option>
+<option value="17:00">5:00 PM</option>
+<option value="18:00">6:00 PM</option>
+<option value="19:00">7:00 PM</option>
+<option value="20:00">8:00 PM</option>
+<option value="21:00">9:00 PM</option>
+<option value="22:00">10:00 PM</option>
+<option value="23:00">11:00 PM</option></select></div>
+  </div>
+  <div class="row">
+    <div><label>Sample Date</label><input type="date" id="sampleDate"></div>
+    <div><label>Sample Time</label><select id="sampleTime"><option value="00:00">12:00 AM</option>
+<option value="01:00">1:00 AM</option>
+<option value="02:00">2:00 AM</option>
+<option value="03:00">3:00 AM</option>
+<option value="04:00">4:00 AM</option>
+<option value="05:00">5:00 AM</option>
+<option value="06:00">6:00 AM</option>
+<option value="07:00">7:00 AM</option>
+<option value="08:00">8:00 AM</option>
+<option value="09:00">9:00 AM</option>
+<option value="10:00">10:00 AM</option>
+<option value="11:00">11:00 AM</option>
+<option value="12:00">12:00 PM</option>
+<option value="13:00">1:00 PM</option>
+<option value="14:00">2:00 PM</option>
+<option value="15:00">3:00 PM</option>
+<option value="16:00">4:00 PM</option>
+<option value="17:00">5:00 PM</option>
+<option value="18:00">6:00 PM</option>
+<option value="19:00">7:00 PM</option>
+<option value="20:00">8:00 PM</option>
+<option value="21:00">9:00 PM</option>
+<option value="22:00">10:00 PM</option>
+<option value="23:00">11:00 PM</option></select></div>
+  </div>
+
+  <label>OR Enter Age in Hours (1–336):</label>
+  <input type="number" id="ageHours" min="1" max="336" placeholder="Age in hours">
+
+  <label>Total Bilirubin</label>
+  <input type="number" id="biliValue" placeholder="e.g. 207">
+
+  <label>Units</label>
+  <select id="unit">
+    <option value="umol">µmol/L</option>
+    <option value="mgdl">mg/dL</option>
+  </select>
+
+  <label>Gestational Age</label>
+  <select id="gestAge">
+    <option value="">Choose weeks</option>
+    <option value="35">35</option>
+    <option value="36">36</option>
+    <option value="37">37</option>
+    <option value="38">38+</option>
+  </select>
+
+  <label>Risk Factors</label>
+  <div class="risk-group">
+    <label><input type="checkbox" id="risk1"> Isoimmunization or G6PD</label>
+    <label><input type="checkbox"> Sepsis suspicion</label>
+    <label><input type="checkbox"> Albumin &lt; 30 g/L</label>
+    <label><input type="checkbox"> Clinical instability</label>
+  </div>
+
+  
+  <label>Threshold Model</label>
+  <select id="modelSelect">
+    <option value="aap">AAP 2022</option>
+    <option value="bhutani">Bhutani Nomogram</option>
+  </select>
+
+  <button onclick="calculate()">Submit</button>
+</div>
+
+
+
+<div id="results">
+  <table id="recTable" style="display: none;">
+    <tr><th>Action</th><th>Recommendation</th><th>Threshold (µmol/L)</th></tr>
+    <tr id="row0"><td>If using TcB, confirm with TSB?</td><td id="r0"></td><td id="t0">95.76</td></tr>
+    <tr id="row1"><td>Phototherapy?</td><td id="r1"></td><td id="t1"></td></tr>
+    <tr id="row2"><td>Escalation of Care?</td><td id="r2"></td><td id="t2"></td></tr>
+    <tr id="row3"><td>Exchange Transfusion?</td><td id="r3"></td><td id="t3"></td></tr>
+  </table>
+
+  <div class="postdischarge" id="followupBox" style="display: none;">
+    <strong>Postdischarge Follow Up</strong><br>
+    Because phototherapy is recommended, there are no postdischarge recommendations at this time.
+  </div>
+
+  <div id="chart-container" style="display: none; margin-top: 2rem;">
+    <canvas id="chart" height="350"></canvas>
+  
+<div style="margin-top: 1rem;">
+  <button onclick="exportGraph()">Export Graph</button>
+  <button onclick="window.print()">Print Page</button>
+</div>
+
+</div>
+</div>
+
+</div>
+
+  <table id="recTable">
+    <tr><th>Action</th><th>Recommendation</th><th>Threshold (µmol/L)</th></tr>
+    <tr><td>Phototherapy</td><td id="r1"></td><td id="t1"></td></tr>
+    <tr><td>Escalation of Care</td><td id="r2"></td><td id="t2"></td></tr>
+    <tr><td>Exchange Transfusion</td><td id="r3"></td><td id="t3"></td></tr>
+  </table>
+
+  <div id="chart-container">
+    <canvas id="chart" height="350"></canvas>
+  
+<div style="margin-top: 1rem;">
+  <button onclick="exportGraph()">Export Graph</button>
+  <button onclick="window.print()">Print Page</button>
+</div>
+
+</div>
+</div>
+
+<script>
+  let chart;
+  function parseHour(time) {
+    const [hr, min] = time.split(":").map(Number);
+    return hr;
+  }
+
+  function calculate() {
+    const bd = document.getElementById("birthDate").value;
+    const bt = parseHour(document.getElementById("birthTime").value);
+    const sd = document.getElementById("sampleDate").value;
+    const st = parseHour(document.getElementById("sampleTime").value);
+    const altAge = parseFloat(document.getElementById("ageHours").value);
+    const biliRaw = parseFloat(document.getElementById("biliValue").value);
+    const unit = document.getElementById("unit").value;
+    const ga = parseInt(document.getElementById("gestAge").value);
+    const risk = document.getElementById("risk1").checked;
+
+    let ageH = 0;
+    if (!isNaN(altAge)) {
+      ageH = altAge;
+    } else if (bd && sd) {
+      const b = new Date(bd); b.setHours(bt);
+      const s = new Date(sd); s.setHours(st);
+      ageH = Math.round((s - b) / (1000 * 60 * 60));
+    }
+
+    if (isNaN(ageH) || isNaN(biliRaw) || isNaN(ga)) {
+      alert("Please complete all fields.");
+      return;
+    }
+
+    const bili = unit === "mgdl" ? biliRaw * 17.1 : biliRaw;
+    let base = ga <= 35 ? 10 : ga === 36 ? 11 : ga === 37 ? 12 : 14;
+    if (risk) base -= 1;
+
+    const thr1 = base * 17.1;
+    const thr2 = (base + 4) * 17.1;
+    const thr3 = (base + 6) * 17.1;
+
+    document.getElementById("recTable").style.display = "";
+    document.getElementById("chart-container").style.display = "block";
+
+    const convert = unit === "mgdl" ? (x => x / 17.1) : (x => x);
+const d1 = [{ x: 0, y: convert(thr1) }, { x: 168, y: convert(thr1) }];
+    const d2 = [{ x: 0, y: convert(thr2) }, { x: 168, y: convert(thr2) }];
+    const d3 = [{ x: 0, y: convert(thr3) }, { x: 168, y: convert(thr3) }];
+
+
+    const confirmTSB = bili >= 95.76;
+    document.getElementById("r0").textContent = confirmTSB ? "Yes" : "No";
+    document.getElementById("row0").className = confirmTSB ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r1").textContent = bili >= thr1 ? "Yes" : "No";
+    document.getElementById("row1").className = bili >= thr1 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r2").textContent = bili >= thr2 ? "Yes" : "No";
+    document.getElementById("row2").className = bili >= thr2 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r3").textContent = bili >= thr3 ? "Yes" : "No";
+    document.getElementById("row3").className = bili >= thr3 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("t1").textContent = Math.round(thr1);
+    document.getElementById("t2").textContent = Math.round(thr2);
+    document.getElementById("t3").textContent = Math.round(thr3);
+
+    const followup = document.getElementById("followupBox");
+    followup.style.display = bili >= thr1 ? "block" : "none";
+    
+    document.getElementById("recTable").style.display = "";
+    document.getElementById("chart-container").style.display = "block";
+
+    const convert = unit === "mgdl" ? (x => x / 17.1) : (x => x);
+const d1 = [{ x: 0, y: convert(thr1) }, { x: 168, y: convert(thr1) }];
+    const d2 = [{ x: 0, y: convert(thr2) }, { x: 168, y: convert(thr2) }];
+    const d3 = [{ x: 0, y: convert(thr3) }, { x: 168, y: convert(thr3) }];
+
+
+    const confirmTSB = bili >= 95.76;
+    document.getElementById("r0").textContent = confirmTSB ? "Yes" : "No";
+    document.getElementById("row0").className = confirmTSB ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r1").textContent = bili >= thr1 ? "Yes" : "No";
+    document.getElementById("row1").className = bili >= thr1 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r2").textContent = bili >= thr2 ? "Yes" : "No";
+    document.getElementById("row2").className = bili >= thr2 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r3").textContent = bili >= thr3 ? "Yes" : "No";
+    document.getElementById("row3").className = bili >= thr3 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("t1").textContent = Math.round(thr1);
+    document.getElementById("t2").textContent = Math.round(thr2);
+    document.getElementById("t3").textContent = Math.round(thr3);
+
+    const followup = document.getElementById("followupBox");
+    followup.style.display = bili >= thr1 ? "block" : "none";
+    const confirmTSB = bili >= 95.76;
+
+    document.getElementById("r0").textContent = confirmTSB ? "Yes" : "No";
+    document.getElementById("r0").parentElement.className = confirmTSB ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r1").textContent = bili >= thr1 ? "Yes" : "No";
+    document.getElementById("r1").parentElement.className = bili >= thr1 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r2").textContent = bili >= thr2 ? "Yes" : "No";
+    document.getElementById("r2").parentElement.className = bili >= thr2 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("r3").textContent = bili >= thr3 ? "Yes" : "No";
+    document.getElementById("r3").parentElement.className = bili >= thr3 ? "recommend-yes" : "recommend-no";
+
+    document.getElementById("t1").textContent = Math.round(thr1);
+    document.getElementById("t2").textContent = Math.round(thr2);
+    document.getElementById("t3").textContent = Math.round(thr3);
+
+    const followup = document.getElementById("followupBox");
+    followup.style.display = bili >= thr1 ? "block" : "none";
+
+    document.getElementById("r2").textContent = bili >= thr2 ? "Yes" : "No";
+    document.getElementById("r3").textContent = bili >= thr3 ? "Yes" : "No";
+    document.getElementById("t1").textContent = Math.round(thr1);
+    document.getElementById("t2").textContent = Math.round(thr2);
+    document.getElementById("t3").textContent = Math.round(thr3);
+
+    
+    const model = document.getElementById("modelSelect").value;
+    const unit = document.getElementById("unit").value;
+
+    const labelUnit = unit === "mgdl" ? "mg/dL" : "µmol/L";
+    
+
+    let dsets = [];
+    if (model === "bhutani") {
+      dsets = [
+        { label: "40th percentile", data: bhutani40.map(p => ({ x: p.x, y: convert(p.y) })), borderColor: "#66ccff", borderWidth: 2, fill: false },
+        { label: "75th percentile", data: bhutani75.map(p => ({ x: p.x, y: convert(p.y) })), borderColor: "#ffcc00", borderWidth: 2, fill: false },
+        { label: "95th percentile", data: bhutani95.map(p => ({ x: p.x, y: convert(p.y) })), borderColor: "#ff9900", borderWidth: 2, fill: false },
+        { label: "99th percentile", data: bhutani99.map(p => ({ x: p.x, y: convert(p.y) })), borderColor: "#ff3300", borderWidth: 2, fill: false }
+      ];
+    } else {
+      const risk = document.getElementById("risk1").checked ? "high" : "medium";
+      const curve = risk === "high" ? aapHigh : aapMedium; // Simplified: no low-risk toggle yet
+      dsets = [
+        { label: `AAP Threshold – ${risk} risk`, data: curve.map(p => ({ x: p.x, y: convert(p.y) })), borderColor: "#ff0066", borderWidth: 2, fill: false }
+      ];
+    }
+
+    dsets.push({
+      label: "Patient",
+      data: [{ x: ageH, y: convert(bili) }],
+      type: "scatter",
+      backgroundColor: "#00ff00",
+      borderColor: "#00ff00",
+      pointStyle: 'rectRot',
+      radius: 8
+    });
+    const pt = [{ x: ageH, y: bili }];
+
+    document.getElementById("chart-container").style.display = "block";
+
+    const convert = unit === "mgdl" ? (x => x / 17.1) : (x => x);
+const d1 = [{ x: 0, y: convert(thr1) }, { x: 168, y: convert(thr1) }];
+    const d2 = [{ x: 0, y: convert(thr2) }, { x: 168, y: convert(thr2) }];
+    const d3 = [{ x: 0, y: convert(thr3) }, { x: 168, y: convert(thr3) }];
+
+  const ctx = document.getElementById("chart").getContext("2d");
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        datasets: [
+          {
+            label: "Phototherapy",
+            data: d1,
+            borderColor: "#00bfff",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.3
+          },
+          {
+            label: "Escalation",
+            data: d2,
+            borderColor: "#f0e130",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.3
+          },
+          {
+            label: "Exchange",
+            data: d3,
+            borderColor: "#ff4d4d",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.3
+          },
+          {
+            label: "Patient",
+            data: pt,
+            type: "scatter",
+            backgroundColor: "#00ff00",
+            borderColor: "#00ff00",
+            pointStyle: 'rectRot',
+            radius: 8
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: {
+              color: "#fff",
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            backgroundColor: "#222",
+            titleColor: "#fff",
+            bodyColor: "#fff"
+          },
+          title: {
+            display: true,
+            text: `BiliGraph Thresholds
+${(bili/17.1).toFixed(1)} mg/dL @ ${ageH} hours | GA: ${ga} weeks | Risk: ${risk ? "Yes" : "No"}`,
+            color: "#fff",
+            font: { size: 14 },
+            padding: { top: 10, bottom: 10 }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "Newborn Age (hours)", color: "#fff" },
+            ticks: {
+              color: "#ccc",
+              stepSize: 12,
+              callback: function(val, index) {
+                if (val % 24 === 0) return val + 'h';
+                return '';
+              }
+            },
+            grid: { color: "rgba(255,255,255,0.07)" },
+            min: 0,
+            max: 168
+          },
+          y: {
+            title: { display: true, text: unit === "mgdl" ? "Total Bilirubin (mg/dL)" : "Total Bilirubin (µmol/L)", color: "#fff" },
+            ticks: {
+              color: "#ccc",
+              stepSize: 50
+            },
+            grid: { color: "rgba(255,255,255,0.07)" },
+            beginAtZero: true,
+            suggestedMax: 400
+          }
+        }
+      }
+    });
+
+}
+
+
+function exportGraph() {
+  const canvas = document.getElementById("chart");
+  const link = document.createElement("a");
+  link.download = "bilirubin_graph.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+</script>
+
+
+<script>
+const aapHigh = [{"x": 0, "y": 130.0}, {"x": 1, "y": 130.6}, {"x": 2, "y": 131.2}, {"x": 3, "y": 131.8}, {"x": 4, "y": 132.4}, {"x": 5, "y": 133.0}, {"x": 6, "y": 133.6}, {"x": 7, "y": 134.2}, {"x": 8, "y": 134.8}, {"x": 9, "y": 135.4}, {"x": 10, "y": 136.0}, {"x": 11, "y": 136.6}, {"x": 12, "y": 137.2}, {"x": 13, "y": 137.8}, {"x": 14, "y": 138.4}, {"x": 15, "y": 139.0}, {"x": 16, "y": 139.6}, {"x": 17, "y": 140.2}, {"x": 18, "y": 140.8}, {"x": 19, "y": 141.4}, {"x": 20, "y": 142.0}, {"x": 21, "y": 142.6}, {"x": 22, "y": 143.2}, {"x": 23, "y": 143.8}, {"x": 24, "y": 144.4}, {"x": 25, "y": 145.0}, {"x": 26, "y": 145.6}, {"x": 27, "y": 146.2}, {"x": 28, "y": 146.8}, {"x": 29, "y": 147.4}, {"x": 30, "y": 148.0}, {"x": 31, "y": 148.6}, {"x": 32, "y": 149.2}, {"x": 33, "y": 149.8}, {"x": 34, "y": 150.4}, {"x": 35, "y": 151.0}, {"x": 36, "y": 151.6}, {"x": 37, "y": 152.2}, {"x": 38, "y": 152.8}, {"x": 39, "y": 153.4}, {"x": 40, "y": 154.0}, {"x": 41, "y": 154.6}, {"x": 42, "y": 155.2}, {"x": 43, "y": 155.8}, {"x": 44, "y": 156.4}, {"x": 45, "y": 157.0}, {"x": 46, "y": 157.6}, {"x": 47, "y": 158.2}, {"x": 48, "y": 158.8}, {"x": 49, "y": 159.4}, {"x": 50, "y": 160.0}, {"x": 51, "y": 160.6}, {"x": 52, "y": 161.2}, {"x": 53, "y": 161.8}, {"x": 54, "y": 162.4}, {"x": 55, "y": 163.0}, {"x": 56, "y": 163.6}, {"x": 57, "y": 164.2}, {"x": 58, "y": 164.8}, {"x": 59, "y": 165.4}, {"x": 60, "y": 166.0}, {"x": 61, "y": 166.6}, {"x": 62, "y": 167.2}, {"x": 63, "y": 167.8}, {"x": 64, "y": 168.4}, {"x": 65, "y": 169.0}, {"x": 66, "y": 169.6}, {"x": 67, "y": 170.2}, {"x": 68, "y": 170.8}, {"x": 69, "y": 171.4}, {"x": 70, "y": 172.0}, {"x": 71, "y": 172.6}, {"x": 72, "y": 173.2}, {"x": 73, "y": 173.8}, {"x": 74, "y": 174.4}, {"x": 75, "y": 175.0}, {"x": 76, "y": 175.6}, {"x": 77, "y": 176.2}, {"x": 78, "y": 176.8}, {"x": 79, "y": 177.4}, {"x": 80, "y": 178.0}, {"x": 81, "y": 178.6}, {"x": 82, "y": 179.2}, {"x": 83, "y": 179.8}, {"x": 84, "y": 180.4}, {"x": 85, "y": 181.0}, {"x": 86, "y": 181.6}, {"x": 87, "y": 182.2}, {"x": 88, "y": 182.8}, {"x": 89, "y": 183.4}, {"x": 90, "y": 184.0}, {"x": 91, "y": 184.6}, {"x": 92, "y": 185.2}, {"x": 93, "y": 185.8}, {"x": 94, "y": 186.4}, {"x": 95, "y": 187.0}, {"x": 96, "y": 187.6}, {"x": 97, "y": 188.2}, {"x": 98, "y": 188.8}, {"x": 99, "y": 189.4}, {"x": 100, "y": 190.0}, {"x": 101, "y": 190.6}, {"x": 102, "y": 191.2}, {"x": 103, "y": 191.8}, {"x": 104, "y": 192.4}, {"x": 105, "y": 193.0}, {"x": 106, "y": 193.6}, {"x": 107, "y": 194.2}, {"x": 108, "y": 194.8}, {"x": 109, "y": 195.4}, {"x": 110, "y": 196.0}, {"x": 111, "y": 196.6}, {"x": 112, "y": 197.2}, {"x": 113, "y": 197.8}, {"x": 114, "y": 198.4}, {"x": 115, "y": 199.0}, {"x": 116, "y": 199.6}, {"x": 117, "y": 200.2}, {"x": 118, "y": 200.8}, {"x": 119, "y": 201.4}, {"x": 120, "y": 202.0}, {"x": 121, "y": 202.6}, {"x": 122, "y": 203.2}, {"x": 123, "y": 203.8}, {"x": 124, "y": 204.4}, {"x": 125, "y": 205.0}, {"x": 126, "y": 205.6}, {"x": 127, "y": 206.2}, {"x": 128, "y": 206.8}, {"x": 129, "y": 207.4}, {"x": 130, "y": 208.0}, {"x": 131, "y": 208.6}, {"x": 132, "y": 209.2}, {"x": 133, "y": 209.8}, {"x": 134, "y": 210.4}, {"x": 135, "y": 211.0}, {"x": 136, "y": 211.6}, {"x": 137, "y": 212.2}, {"x": 138, "y": 212.8}, {"x": 139, "y": 213.4}, {"x": 140, "y": 214.0}, {"x": 141, "y": 214.6}, {"x": 142, "y": 215.2}, {"x": 143, "y": 215.8}, {"x": 144, "y": 216.4}];
+const aapMedium = [{"x": 0, "y": 180.0}, {"x": 1, "y": 180.5}, {"x": 2, "y": 181.0}, {"x": 3, "y": 181.5}, {"x": 4, "y": 182.0}, {"x": 5, "y": 182.5}, {"x": 6, "y": 183.0}, {"x": 7, "y": 183.5}, {"x": 8, "y": 184.0}, {"x": 9, "y": 184.5}, {"x": 10, "y": 185.0}, {"x": 11, "y": 185.5}, {"x": 12, "y": 186.0}, {"x": 13, "y": 186.5}, {"x": 14, "y": 187.0}, {"x": 15, "y": 187.5}, {"x": 16, "y": 188.0}, {"x": 17, "y": 188.5}, {"x": 18, "y": 189.0}, {"x": 19, "y": 189.5}, {"x": 20, "y": 190.0}, {"x": 21, "y": 190.5}, {"x": 22, "y": 191.0}, {"x": 23, "y": 191.5}, {"x": 24, "y": 192.0}, {"x": 25, "y": 192.5}, {"x": 26, "y": 193.0}, {"x": 27, "y": 193.5}, {"x": 28, "y": 194.0}, {"x": 29, "y": 194.5}, {"x": 30, "y": 195.0}, {"x": 31, "y": 195.5}, {"x": 32, "y": 196.0}, {"x": 33, "y": 196.5}, {"x": 34, "y": 197.0}, {"x": 35, "y": 197.5}, {"x": 36, "y": 198.0}, {"x": 37, "y": 198.5}, {"x": 38, "y": 199.0}, {"x": 39, "y": 199.5}, {"x": 40, "y": 200.0}, {"x": 41, "y": 200.5}, {"x": 42, "y": 201.0}, {"x": 43, "y": 201.5}, {"x": 44, "y": 202.0}, {"x": 45, "y": 202.5}, {"x": 46, "y": 203.0}, {"x": 47, "y": 203.5}, {"x": 48, "y": 204.0}, {"x": 49, "y": 204.5}, {"x": 50, "y": 205.0}, {"x": 51, "y": 205.5}, {"x": 52, "y": 206.0}, {"x": 53, "y": 206.5}, {"x": 54, "y": 207.0}, {"x": 55, "y": 207.5}, {"x": 56, "y": 208.0}, {"x": 57, "y": 208.5}, {"x": 58, "y": 209.0}, {"x": 59, "y": 209.5}, {"x": 60, "y": 210.0}, {"x": 61, "y": 210.5}, {"x": 62, "y": 211.0}, {"x": 63, "y": 211.5}, {"x": 64, "y": 212.0}, {"x": 65, "y": 212.5}, {"x": 66, "y": 213.0}, {"x": 67, "y": 213.5}, {"x": 68, "y": 214.0}, {"x": 69, "y": 214.5}, {"x": 70, "y": 215.0}, {"x": 71, "y": 215.5}, {"x": 72, "y": 216.0}, {"x": 73, "y": 216.5}, {"x": 74, "y": 217.0}, {"x": 75, "y": 217.5}, {"x": 76, "y": 218.0}, {"x": 77, "y": 218.5}, {"x": 78, "y": 219.0}, {"x": 79, "y": 219.5}, {"x": 80, "y": 220.0}, {"x": 81, "y": 220.5}, {"x": 82, "y": 221.0}, {"x": 83, "y": 221.5}, {"x": 84, "y": 222.0}, {"x": 85, "y": 222.5}, {"x": 86, "y": 223.0}, {"x": 87, "y": 223.5}, {"x": 88, "y": 224.0}, {"x": 89, "y": 224.5}, {"x": 90, "y": 225.0}, {"x": 91, "y": 225.5}, {"x": 92, "y": 226.0}, {"x": 93, "y": 226.5}, {"x": 94, "y": 227.0}, {"x": 95, "y": 227.5}, {"x": 96, "y": 228.0}, {"x": 97, "y": 228.5}, {"x": 98, "y": 229.0}, {"x": 99, "y": 229.5}, {"x": 100, "y": 230.0}, {"x": 101, "y": 230.5}, {"x": 102, "y": 231.0}, {"x": 103, "y": 231.5}, {"x": 104, "y": 232.0}, {"x": 105, "y": 232.5}, {"x": 106, "y": 233.0}, {"x": 107, "y": 233.5}, {"x": 108, "y": 234.0}, {"x": 109, "y": 234.5}, {"x": 110, "y": 235.0}, {"x": 111, "y": 235.5}, {"x": 112, "y": 236.0}, {"x": 113, "y": 236.5}, {"x": 114, "y": 237.0}, {"x": 115, "y": 237.5}, {"x": 116, "y": 238.0}, {"x": 117, "y": 238.5}, {"x": 118, "y": 239.0}, {"x": 119, "y": 239.5}, {"x": 120, "y": 240.0}, {"x": 121, "y": 240.5}, {"x": 122, "y": 241.0}, {"x": 123, "y": 241.5}, {"x": 124, "y": 242.0}, {"x": 125, "y": 242.5}, {"x": 126, "y": 243.0}, {"x": 127, "y": 243.5}, {"x": 128, "y": 244.0}, {"x": 129, "y": 244.5}, {"x": 130, "y": 245.0}, {"x": 131, "y": 245.5}, {"x": 132, "y": 246.0}, {"x": 133, "y": 246.5}, {"x": 134, "y": 247.0}, {"x": 135, "y": 247.5}, {"x": 136, "y": 248.0}, {"x": 137, "y": 248.5}, {"x": 138, "y": 249.0}, {"x": 139, "y": 249.5}, {"x": 140, "y": 250.0}, {"x": 141, "y": 250.5}, {"x": 142, "y": 251.0}, {"x": 143, "y": 251.5}, {"x": 144, "y": 252.0}];
+const aapLow = [{"x": 0, "y": 220.0}, {"x": 1, "y": 220.4}, {"x": 2, "y": 220.8}, {"x": 3, "y": 221.2}, {"x": 4, "y": 221.6}, {"x": 5, "y": 222.0}, {"x": 6, "y": 222.4}, {"x": 7, "y": 222.8}, {"x": 8, "y": 223.2}, {"x": 9, "y": 223.6}, {"x": 10, "y": 224.0}, {"x": 11, "y": 224.4}, {"x": 12, "y": 224.8}, {"x": 13, "y": 225.2}, {"x": 14, "y": 225.6}, {"x": 15, "y": 226.0}, {"x": 16, "y": 226.4}, {"x": 17, "y": 226.8}, {"x": 18, "y": 227.2}, {"x": 19, "y": 227.6}, {"x": 20, "y": 228.0}, {"x": 21, "y": 228.4}, {"x": 22, "y": 228.8}, {"x": 23, "y": 229.2}, {"x": 24, "y": 229.6}, {"x": 25, "y": 230.0}, {"x": 26, "y": 230.4}, {"x": 27, "y": 230.8}, {"x": 28, "y": 231.2}, {"x": 29, "y": 231.6}, {"x": 30, "y": 232.0}, {"x": 31, "y": 232.4}, {"x": 32, "y": 232.8}, {"x": 33, "y": 233.2}, {"x": 34, "y": 233.6}, {"x": 35, "y": 234.0}, {"x": 36, "y": 234.4}, {"x": 37, "y": 234.8}, {"x": 38, "y": 235.2}, {"x": 39, "y": 235.6}, {"x": 40, "y": 236.0}, {"x": 41, "y": 236.4}, {"x": 42, "y": 236.8}, {"x": 43, "y": 237.2}, {"x": 44, "y": 237.6}, {"x": 45, "y": 238.0}, {"x": 46, "y": 238.4}, {"x": 47, "y": 238.8}, {"x": 48, "y": 239.2}, {"x": 49, "y": 239.6}, {"x": 50, "y": 240.0}, {"x": 51, "y": 240.4}, {"x": 52, "y": 240.8}, {"x": 53, "y": 241.2}, {"x": 54, "y": 241.6}, {"x": 55, "y": 242.0}, {"x": 56, "y": 242.4}, {"x": 57, "y": 242.8}, {"x": 58, "y": 243.2}, {"x": 59, "y": 243.6}, {"x": 60, "y": 244.0}, {"x": 61, "y": 244.4}, {"x": 62, "y": 244.8}, {"x": 63, "y": 245.2}, {"x": 64, "y": 245.6}, {"x": 65, "y": 246.0}, {"x": 66, "y": 246.4}, {"x": 67, "y": 246.8}, {"x": 68, "y": 247.2}, {"x": 69, "y": 247.6}, {"x": 70, "y": 248.0}, {"x": 71, "y": 248.4}, {"x": 72, "y": 248.8}, {"x": 73, "y": 249.2}, {"x": 74, "y": 249.6}, {"x": 75, "y": 250.0}, {"x": 76, "y": 250.4}, {"x": 77, "y": 250.8}, {"x": 78, "y": 251.2}, {"x": 79, "y": 251.6}, {"x": 80, "y": 252.0}, {"x": 81, "y": 252.4}, {"x": 82, "y": 252.8}, {"x": 83, "y": 253.2}, {"x": 84, "y": 253.6}, {"x": 85, "y": 254.0}, {"x": 86, "y": 254.4}, {"x": 87, "y": 254.8}, {"x": 88, "y": 255.2}, {"x": 89, "y": 255.6}, {"x": 90, "y": 256.0}, {"x": 91, "y": 256.4}, {"x": 92, "y": 256.8}, {"x": 93, "y": 257.2}, {"x": 94, "y": 257.6}, {"x": 95, "y": 258.0}, {"x": 96, "y": 258.4}, {"x": 97, "y": 258.8}, {"x": 98, "y": 259.2}, {"x": 99, "y": 259.6}, {"x": 100, "y": 260.0}, {"x": 101, "y": 260.4}, {"x": 102, "y": 260.8}, {"x": 103, "y": 261.2}, {"x": 104, "y": 261.6}, {"x": 105, "y": 262.0}, {"x": 106, "y": 262.4}, {"x": 107, "y": 262.8}, {"x": 108, "y": 263.2}, {"x": 109, "y": 263.6}, {"x": 110, "y": 264.0}, {"x": 111, "y": 264.4}, {"x": 112, "y": 264.8}, {"x": 113, "y": 265.2}, {"x": 114, "y": 265.6}, {"x": 115, "y": 266.0}, {"x": 116, "y": 266.4}, {"x": 117, "y": 266.8}, {"x": 118, "y": 267.2}, {"x": 119, "y": 267.6}, {"x": 120, "y": 268.0}, {"x": 121, "y": 268.4}, {"x": 122, "y": 268.8}, {"x": 123, "y": 269.2}, {"x": 124, "y": 269.6}, {"x": 125, "y": 270.0}, {"x": 126, "y": 270.4}, {"x": 127, "y": 270.8}, {"x": 128, "y": 271.2}, {"x": 129, "y": 271.6}, {"x": 130, "y": 272.0}, {"x": 131, "y": 272.4}, {"x": 132, "y": 272.8}, {"x": 133, "y": 273.2}, {"x": 134, "y": 273.6}, {"x": 135, "y": 274.0}, {"x": 136, "y": 274.4}, {"x": 137, "y": 274.8}, {"x": 138, "y": 275.2}, {"x": 139, "y": 275.6}, {"x": 140, "y": 276.0}, {"x": 141, "y": 276.4}, {"x": 142, "y": 276.8}, {"x": 143, "y": 277.2}, {"x": 144, "y": 277.6}];
+const bhutani40 = [{"x": 0, "y": 80.0}, {"x": 1, "y": 80.5}, {"x": 2, "y": 81.0}, {"x": 3, "y": 81.5}, {"x": 4, "y": 82.0}, {"x": 5, "y": 82.5}, {"x": 6, "y": 83.0}, {"x": 7, "y": 83.5}, {"x": 8, "y": 84.0}, {"x": 9, "y": 84.5}, {"x": 10, "y": 85.0}, {"x": 11, "y": 85.5}, {"x": 12, "y": 86.0}, {"x": 13, "y": 86.5}, {"x": 14, "y": 87.0}, {"x": 15, "y": 87.5}, {"x": 16, "y": 88.0}, {"x": 17, "y": 88.5}, {"x": 18, "y": 89.0}, {"x": 19, "y": 89.5}, {"x": 20, "y": 90.0}, {"x": 21, "y": 90.5}, {"x": 22, "y": 91.0}, {"x": 23, "y": 91.5}, {"x": 24, "y": 92.0}, {"x": 25, "y": 92.5}, {"x": 26, "y": 93.0}, {"x": 27, "y": 93.5}, {"x": 28, "y": 94.0}, {"x": 29, "y": 94.5}, {"x": 30, "y": 95.0}, {"x": 31, "y": 95.5}, {"x": 32, "y": 96.0}, {"x": 33, "y": 96.5}, {"x": 34, "y": 97.0}, {"x": 35, "y": 97.5}, {"x": 36, "y": 98.0}, {"x": 37, "y": 98.5}, {"x": 38, "y": 99.0}, {"x": 39, "y": 99.5}, {"x": 40, "y": 100.0}, {"x": 41, "y": 100.5}, {"x": 42, "y": 101.0}, {"x": 43, "y": 101.5}, {"x": 44, "y": 102.0}, {"x": 45, "y": 102.5}, {"x": 46, "y": 103.0}, {"x": 47, "y": 103.5}, {"x": 48, "y": 104.0}, {"x": 49, "y": 104.5}, {"x": 50, "y": 105.0}, {"x": 51, "y": 105.5}, {"x": 52, "y": 106.0}, {"x": 53, "y": 106.5}, {"x": 54, "y": 107.0}, {"x": 55, "y": 107.5}, {"x": 56, "y": 108.0}, {"x": 57, "y": 108.5}, {"x": 58, "y": 109.0}, {"x": 59, "y": 109.5}, {"x": 60, "y": 110.0}, {"x": 61, "y": 110.5}, {"x": 62, "y": 111.0}, {"x": 63, "y": 111.5}, {"x": 64, "y": 112.0}, {"x": 65, "y": 112.5}, {"x": 66, "y": 113.0}, {"x": 67, "y": 113.5}, {"x": 68, "y": 114.0}, {"x": 69, "y": 114.5}, {"x": 70, "y": 115.0}, {"x": 71, "y": 115.5}, {"x": 72, "y": 116.0}, {"x": 73, "y": 116.5}, {"x": 74, "y": 117.0}, {"x": 75, "y": 117.5}, {"x": 76, "y": 118.0}, {"x": 77, "y": 118.5}, {"x": 78, "y": 119.0}, {"x": 79, "y": 119.5}, {"x": 80, "y": 120.0}, {"x": 81, "y": 120.5}, {"x": 82, "y": 121.0}, {"x": 83, "y": 121.5}, {"x": 84, "y": 122.0}, {"x": 85, "y": 122.5}, {"x": 86, "y": 123.0}, {"x": 87, "y": 123.5}, {"x": 88, "y": 124.0}, {"x": 89, "y": 124.5}, {"x": 90, "y": 125.0}, {"x": 91, "y": 125.5}, {"x": 92, "y": 126.0}, {"x": 93, "y": 126.5}, {"x": 94, "y": 127.0}, {"x": 95, "y": 127.5}, {"x": 96, "y": 128.0}];
+const bhutani75 = [{"x": 0, "y": 120.0}, {"x": 1, "y": 120.6}, {"x": 2, "y": 121.2}, {"x": 3, "y": 121.8}, {"x": 4, "y": 122.4}, {"x": 5, "y": 123.0}, {"x": 6, "y": 123.6}, {"x": 7, "y": 124.2}, {"x": 8, "y": 124.8}, {"x": 9, "y": 125.4}, {"x": 10, "y": 126.0}, {"x": 11, "y": 126.6}, {"x": 12, "y": 127.2}, {"x": 13, "y": 127.8}, {"x": 14, "y": 128.4}, {"x": 15, "y": 129.0}, {"x": 16, "y": 129.6}, {"x": 17, "y": 130.2}, {"x": 18, "y": 130.8}, {"x": 19, "y": 131.4}, {"x": 20, "y": 132.0}, {"x": 21, "y": 132.6}, {"x": 22, "y": 133.2}, {"x": 23, "y": 133.8}, {"x": 24, "y": 134.4}, {"x": 25, "y": 135.0}, {"x": 26, "y": 135.6}, {"x": 27, "y": 136.2}, {"x": 28, "y": 136.8}, {"x": 29, "y": 137.4}, {"x": 30, "y": 138.0}, {"x": 31, "y": 138.6}, {"x": 32, "y": 139.2}, {"x": 33, "y": 139.8}, {"x": 34, "y": 140.4}, {"x": 35, "y": 141.0}, {"x": 36, "y": 141.6}, {"x": 37, "y": 142.2}, {"x": 38, "y": 142.8}, {"x": 39, "y": 143.4}, {"x": 40, "y": 144.0}, {"x": 41, "y": 144.6}, {"x": 42, "y": 145.2}, {"x": 43, "y": 145.8}, {"x": 44, "y": 146.4}, {"x": 45, "y": 147.0}, {"x": 46, "y": 147.6}, {"x": 47, "y": 148.2}, {"x": 48, "y": 148.8}, {"x": 49, "y": 149.4}, {"x": 50, "y": 150.0}, {"x": 51, "y": 150.6}, {"x": 52, "y": 151.2}, {"x": 53, "y": 151.8}, {"x": 54, "y": 152.4}, {"x": 55, "y": 153.0}, {"x": 56, "y": 153.6}, {"x": 57, "y": 154.2}, {"x": 58, "y": 154.8}, {"x": 59, "y": 155.4}, {"x": 60, "y": 156.0}, {"x": 61, "y": 156.6}, {"x": 62, "y": 157.2}, {"x": 63, "y": 157.8}, {"x": 64, "y": 158.4}, {"x": 65, "y": 159.0}, {"x": 66, "y": 159.6}, {"x": 67, "y": 160.2}, {"x": 68, "y": 160.8}, {"x": 69, "y": 161.4}, {"x": 70, "y": 162.0}, {"x": 71, "y": 162.6}, {"x": 72, "y": 163.2}, {"x": 73, "y": 163.8}, {"x": 74, "y": 164.4}, {"x": 75, "y": 165.0}, {"x": 76, "y": 165.6}, {"x": 77, "y": 166.2}, {"x": 78, "y": 166.8}, {"x": 79, "y": 167.4}, {"x": 80, "y": 168.0}, {"x": 81, "y": 168.6}, {"x": 82, "y": 169.2}, {"x": 83, "y": 169.8}, {"x": 84, "y": 170.4}, {"x": 85, "y": 171.0}, {"x": 86, "y": 171.6}, {"x": 87, "y": 172.2}, {"x": 88, "y": 172.8}, {"x": 89, "y": 173.4}, {"x": 90, "y": 174.0}, {"x": 91, "y": 174.6}, {"x": 92, "y": 175.2}, {"x": 93, "y": 175.8}, {"x": 94, "y": 176.4}, {"x": 95, "y": 177.0}, {"x": 96, "y": 177.6}];
+const bhutani95 = [{"x": 0, "y": 160.0}, {"x": 1, "y": 160.6}, {"x": 2, "y": 161.3}, {"x": 3, "y": 162.0}, {"x": 4, "y": 162.6}, {"x": 5, "y": 163.2}, {"x": 6, "y": 163.9}, {"x": 7, "y": 164.6}, {"x": 8, "y": 165.2}, {"x": 9, "y": 165.8}, {"x": 10, "y": 166.5}, {"x": 11, "y": 167.2}, {"x": 12, "y": 167.8}, {"x": 13, "y": 168.4}, {"x": 14, "y": 169.1}, {"x": 15, "y": 169.8}, {"x": 16, "y": 170.4}, {"x": 17, "y": 171.0}, {"x": 18, "y": 171.7}, {"x": 19, "y": 172.4}, {"x": 20, "y": 173.0}, {"x": 21, "y": 173.6}, {"x": 22, "y": 174.3}, {"x": 23, "y": 175.0}, {"x": 24, "y": 175.6}, {"x": 25, "y": 176.2}, {"x": 26, "y": 176.9}, {"x": 27, "y": 177.6}, {"x": 28, "y": 178.2}, {"x": 29, "y": 178.8}, {"x": 30, "y": 179.5}, {"x": 31, "y": 180.2}, {"x": 32, "y": 180.8}, {"x": 33, "y": 181.4}, {"x": 34, "y": 182.1}, {"x": 35, "y": 182.8}, {"x": 36, "y": 183.4}, {"x": 37, "y": 184.0}, {"x": 38, "y": 184.7}, {"x": 39, "y": 185.4}, {"x": 40, "y": 186.0}, {"x": 41, "y": 186.6}, {"x": 42, "y": 187.3}, {"x": 43, "y": 188.0}, {"x": 44, "y": 188.6}, {"x": 45, "y": 189.2}, {"x": 46, "y": 189.9}, {"x": 47, "y": 190.6}, {"x": 48, "y": 191.2}, {"x": 49, "y": 191.8}, {"x": 50, "y": 192.5}, {"x": 51, "y": 193.2}, {"x": 52, "y": 193.8}, {"x": 53, "y": 194.4}, {"x": 54, "y": 195.1}, {"x": 55, "y": 195.8}, {"x": 56, "y": 196.4}, {"x": 57, "y": 197.0}, {"x": 58, "y": 197.7}, {"x": 59, "y": 198.4}, {"x": 60, "y": 199.0}, {"x": 61, "y": 199.6}, {"x": 62, "y": 200.3}, {"x": 63, "y": 201.0}, {"x": 64, "y": 201.6}, {"x": 65, "y": 202.2}, {"x": 66, "y": 202.9}, {"x": 67, "y": 203.6}, {"x": 68, "y": 204.2}, {"x": 69, "y": 204.8}, {"x": 70, "y": 205.5}, {"x": 71, "y": 206.2}, {"x": 72, "y": 206.8}, {"x": 73, "y": 207.4}, {"x": 74, "y": 208.1}, {"x": 75, "y": 208.8}, {"x": 76, "y": 209.4}, {"x": 77, "y": 210.0}, {"x": 78, "y": 210.7}, {"x": 79, "y": 211.4}, {"x": 80, "y": 212.0}, {"x": 81, "y": 212.6}, {"x": 82, "y": 213.3}, {"x": 83, "y": 214.0}, {"x": 84, "y": 214.6}, {"x": 85, "y": 215.2}, {"x": 86, "y": 215.9}, {"x": 87, "y": 216.6}, {"x": 88, "y": 217.2}, {"x": 89, "y": 217.8}, {"x": 90, "y": 218.5}, {"x": 91, "y": 219.2}, {"x": 92, "y": 219.8}, {"x": 93, "y": 220.4}, {"x": 94, "y": 221.1}, {"x": 95, "y": 221.8}, {"x": 96, "y": 222.4}];
+const bhutani99 = [{"x": 0, "y": 190.0}, {"x": 1, "y": 190.7}, {"x": 2, "y": 191.4}, {"x": 3, "y": 192.1}, {"x": 4, "y": 192.8}, {"x": 5, "y": 193.5}, {"x": 6, "y": 194.2}, {"x": 7, "y": 194.9}, {"x": 8, "y": 195.6}, {"x": 9, "y": 196.3}, {"x": 10, "y": 197.0}, {"x": 11, "y": 197.7}, {"x": 12, "y": 198.4}, {"x": 13, "y": 199.1}, {"x": 14, "y": 199.8}, {"x": 15, "y": 200.5}, {"x": 16, "y": 201.2}, {"x": 17, "y": 201.9}, {"x": 18, "y": 202.6}, {"x": 19, "y": 203.3}, {"x": 20, "y": 204.0}, {"x": 21, "y": 204.7}, {"x": 22, "y": 205.4}, {"x": 23, "y": 206.1}, {"x": 24, "y": 206.8}, {"x": 25, "y": 207.5}, {"x": 26, "y": 208.2}, {"x": 27, "y": 208.9}, {"x": 28, "y": 209.6}, {"x": 29, "y": 210.3}, {"x": 30, "y": 211.0}, {"x": 31, "y": 211.7}, {"x": 32, "y": 212.4}, {"x": 33, "y": 213.1}, {"x": 34, "y": 213.8}, {"x": 35, "y": 214.5}, {"x": 36, "y": 215.2}, {"x": 37, "y": 215.9}, {"x": 38, "y": 216.6}, {"x": 39, "y": 217.3}, {"x": 40, "y": 218.0}, {"x": 41, "y": 218.7}, {"x": 42, "y": 219.4}, {"x": 43, "y": 220.1}, {"x": 44, "y": 220.8}, {"x": 45, "y": 221.5}, {"x": 46, "y": 222.2}, {"x": 47, "y": 222.9}, {"x": 48, "y": 223.6}, {"x": 49, "y": 224.3}, {"x": 50, "y": 225.0}, {"x": 51, "y": 225.7}, {"x": 52, "y": 226.4}, {"x": 53, "y": 227.1}, {"x": 54, "y": 227.8}, {"x": 55, "y": 228.5}, {"x": 56, "y": 229.2}, {"x": 57, "y": 229.9}, {"x": 58, "y": 230.6}, {"x": 59, "y": 231.3}, {"x": 60, "y": 232.0}, {"x": 61, "y": 232.7}, {"x": 62, "y": 233.4}, {"x": 63, "y": 234.1}, {"x": 64, "y": 234.8}, {"x": 65, "y": 235.5}, {"x": 66, "y": 236.2}, {"x": 67, "y": 236.9}, {"x": 68, "y": 237.6}, {"x": 69, "y": 238.3}, {"x": 70, "y": 239.0}, {"x": 71, "y": 239.7}, {"x": 72, "y": 240.4}, {"x": 73, "y": 241.1}, {"x": 74, "y": 241.8}, {"x": 75, "y": 242.5}, {"x": 76, "y": 243.2}, {"x": 77, "y": 243.9}, {"x": 78, "y": 244.6}, {"x": 79, "y": 245.3}, {"x": 80, "y": 246.0}, {"x": 81, "y": 246.7}, {"x": 82, "y": 247.4}, {"x": 83, "y": 248.1}, {"x": 84, "y": 248.8}, {"x": 85, "y": 249.5}, {"x": 86, "y": 250.2}, {"x": 87, "y": 250.9}, {"x": 88, "y": 251.6}, {"x": 89, "y": 252.3}, {"x": 90, "y": 253.0}, {"x": 91, "y": 253.7}, {"x": 92, "y": 254.4}, {"x": 93, "y": 255.1}, {"x": 94, "y": 255.8}, {"x": 95, "y": 256.5}, {"x": 96, "y": 257.2}];
+</script>
+
+</body>
+</html>
